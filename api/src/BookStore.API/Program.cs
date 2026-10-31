@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using BookStore.Application;
 using BookStore.Domain.Entities;
 using BookStore.Domain.Interfaces;
 using BookStore.Infrastructure.Persistence;
@@ -7,13 +9,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 var connectionString = builder.Configuration.GetConnectionString("BookStore") ?? "Data Source=bookstore.db";
 builder.Services.AddDbContext<BookStoreDbContext>(options => options.UseSqlite(connectionString));
 builder.Services.AddScoped<IRepository<BookEntity, int>, BookRepository>();
+builder.Services.AddScoped<IReadOnlyRepository<BookEntity, int>>(sp => sp.GetRequiredService<IRepository<BookEntity, int>>());
+
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblyContaining<ApplicationLayer>();
+});
 
 var app = builder.Build();
 

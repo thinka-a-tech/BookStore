@@ -8,7 +8,8 @@ public class BookRepository(BookStoreDbContext context) : IRepository<BookEntity
 {
     public async Task<BookEntity?> GetByIdAsync(int id) => await context.Books.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
 
-    public async Task<IEnumerable<BookEntity>> GetAllAsync() => await context.Books.AsNoTracking().ToListAsync();
+    public async Task<IEnumerable<BookEntity>> GetAllAsync(CancellationToken cancellationToken = default) =>
+        await context.Books.AsNoTracking().ToListAsync(cancellationToken);
 
     public async Task AddAsync(BookEntity entity) => await context.Books.AddAsync(entity);
 
