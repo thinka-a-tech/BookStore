@@ -12,7 +12,10 @@
 
   <ItemGroup>
     <Folder Include="ExternalServices\" />
-    <Folder Include="Persistence\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.14" />
   </ItemGroup>
 
 </Project>

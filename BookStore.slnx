@@ -5,5 +5,8 @@
     <Project Path="api/src/BookStore.Domain/BookStore.Domain.csproj" />
     <Project Path="api/src/BookStore.Infrastructure/BookStore.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/docs/">
+    <File Path="../../../Downloads/Full Stack Developer - Technical Assessment.md" />
+  </Folder>
   <Folder Name="/web/" />
 </Solution>
