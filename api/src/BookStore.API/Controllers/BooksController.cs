@@ -1,5 +1,7 @@
+using System.ComponentModel.DataAnnotations;
 using BookStore.Application.Features.Books;
 using BookStore.Application.Features.Books.GetBooks;
+using BookStore.Domain.Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,13 +12,23 @@ namespace BookStore.API.Controllers;
 [Produces("application/json")]
 public sealed class BooksController(IMediator mediator) : ControllerBase
 {
-    /// <summary>Lists all books</summary>
+    /// <summary>Lists books with paging and sorting.</summary>
+    /// <param name="page">Page number</param>
+    /// <param name="pageSize">Items per page</param>
+    /// <param name="sortBy">Field to sort by</param>
+    /// <param name="descending">Sort in descending order</param>
     [HttpGet]
-    [ProducesResponseType<IReadOnlyList<BookDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<PagedResult<BookDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IReadOnlyList<BookDto>>> GetBooks(CancellationToken cancellationToken)
+    public async Task<ActionResult<PagedResult<BookDto>>> GetBooks(
+        [FromQuery, Range(1, int.MaxValue)] int page = 1,
+        [FromQuery, Range(1, 100)] int pageSize = 10,
+        [FromQuery] BookSortField sortBy = BookSortField.Title,
+        [FromQuery] bool descending = false,
+        CancellationToken cancellationToken = default)
     {
-        var result = await mediator.Send(new GetBooksQuery(), cancellationToken);
+        var result = await mediator.Send(new GetBooksQuery(page, pageSize, sortBy, descending), cancellationToken);
 
         return result.IsSuccess
             ? Ok(result.Value)

@@ -1,7 +1,19 @@
 @BookStore.API_HostAddress = http://localhost:5104
 
-### List all books
+### List books (defaults: page 1, 10 per page, sorted by title)
 GET {{BookStore.API_HostAddress}}/api/books
+Accept: application/json
+
+### Page 2 with 5 items per page
+GET {{BookStore.API_HostAddress}}/api/books?page=2&pageSize=5
+Accept: application/json
+
+### Sort by price, highest first (sortBy: Title, Author, Genre, Price, PublishedYear, Stock)
+GET {{BookStore.API_HostAddress}}/api/books?sortBy=Price&descending=true
+Accept: application/json
+
+### Invalid paging returns 400 Bad Request
+GET {{BookStore.API_HostAddress}}/api/books?page=0&pageSize=500
 Accept: application/json
 
 ###
