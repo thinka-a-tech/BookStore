@@ -1,10 +1,11 @@
 using BookStore.Domain.Entities;
+using BookStore.Domain.Interfaces;
 using BookStore.Infrastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStore.Infrastructure.Persistence;
 
-public class BookStoreDbContext(DbContextOptions<BookStoreDbContext> options) : DbContext(options)
+public class BookStoreDbContext(DbContextOptions<BookStoreDbContext> options) : DbContext(options), IUnitOfWork
 {
     public DbSet<BookEntity> Books => Set<BookEntity>();
 

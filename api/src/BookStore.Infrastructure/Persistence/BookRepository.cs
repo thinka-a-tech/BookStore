@@ -52,7 +52,10 @@ public class BookRepository(BookStoreDbContext context) : IRepository<BookEntity
         return result.Select(r => new GenreCount(Enum.Parse<Genre>(r.Genre), r.Count)).ToList();
     }
 
-    public async Task AddAsync(BookEntity entity) => await context.Books.AddAsync(entity);
+    public async Task<bool> IsbnExistsAsync(string isbn, CancellationToken cancellationToken = default) =>
+        await context.Books.AnyAsync(b => b.Isbn == isbn, cancellationToken);
+
+    public async Task AddAsync(BookEntity entity, CancellationToken cancellationToken = default) => await context.Books.AddAsync(entity, cancellationToken);
 
     public void Update(BookEntity entity) => context.Books.Update(entity);
 

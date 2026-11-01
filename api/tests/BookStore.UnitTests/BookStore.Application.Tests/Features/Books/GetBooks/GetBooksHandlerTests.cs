@@ -14,7 +14,7 @@ public class GetBooksHandlerTests
     {
         //Arrange
         var repository = new RecordingRepository(new PagedResult<BookEntity>([], 2, 5, 12));
-        var handler = new GetBooksHandler(repository);
+        var handler = new GetBooksQueryHandler(repository);
 
         //Act
         await handler.Handle(new GetBooksQuery(Page: 2, PageSize: 5), CancellationToken.None);
@@ -31,7 +31,7 @@ public class GetBooksHandlerTests
     {
         //Arrange
         var repository = new RecordingRepository(new PagedResult<BookEntity>([], 1, 10, 0));
-        var handler = new GetBooksHandler(repository);
+        var handler = new GetBooksQueryHandler(repository);
 
         //Act
         await handler.Handle(new GetBooksQuery(Descending: descending), CancellationToken.None);
@@ -45,7 +45,7 @@ public class GetBooksHandlerTests
     {
         //Arrange
         var repository = new RecordingRepository(new PagedResult<BookEntity>([], 1, 10, 0));
-        var handler = new GetBooksHandler(repository);
+        var handler = new GetBooksQueryHandler(repository);
         using var cancellation = new CancellationTokenSource();
 
         //Act
@@ -60,7 +60,7 @@ public class GetBooksHandlerTests
     {
         //Arrange
         var repository = new RecordingRepository(new PagedResult<BookEntity>([], 1, 10, 0));
-        var handler = new GetBooksHandler(repository);
+        var handler = new GetBooksQueryHandler(repository);
 
         //Act
         await handler.Handle(new GetBooksQuery(Genre: Genre.SciFi), CancellationToken.None);
@@ -77,7 +77,7 @@ public class GetBooksHandlerTests
     {
         //Arrange
         var repository = new RecordingRepository(new PagedResult<BookEntity>([], 2, 5, 12));
-        var handler = new GetBooksHandler(repository);
+        var handler = new GetBooksQueryHandler(repository);
 
         //Act
         var result = await handler.Handle(new GetBooksQuery(Page: 2, PageSize: 5), CancellationToken.None);
@@ -97,7 +97,7 @@ public class GetBooksHandlerTests
         //Arrange
         var book = CreateBook(Genre.SciFi);
         var repository = new RecordingRepository(new PagedResult<BookEntity>([book], 1, 10, 1));
-        var handler = new GetBooksHandler(repository);
+        var handler = new GetBooksQueryHandler(repository);
 
         //Act
         var result = await handler.Handle(new GetBooksQuery(), CancellationToken.None);
@@ -131,7 +131,7 @@ public class GetBooksHandlerTests
         //Arrange
         var book = CreateBook(Genre.SciFi);
         var repository = new RecordingRepository(new PagedResult<BookEntity>([], 1, 10, 0));
-        var handler = new GetBooksHandler(repository);
+        var handler = new GetBooksQueryHandler(repository);
         object? expected = sortField switch
         {
             BookSortField.Title => book.Title,
