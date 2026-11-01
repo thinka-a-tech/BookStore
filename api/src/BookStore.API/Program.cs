@@ -16,8 +16,10 @@ builder.Services.AddOpenApi();
 
 var connectionString = builder.Configuration.GetConnectionString("BookStore") ?? "Data Source=bookstore.db";
 builder.Services.AddDbContext<BookStoreDbContext>(options => options.UseSqlite(connectionString));
-builder.Services.AddScoped<IRepository<BookEntity, int>, BookRepository>();
-builder.Services.AddScoped<IReadOnlyRepository<BookEntity, int>>(sp => sp.GetRequiredService<IRepository<BookEntity, int>>());
+builder.Services.AddScoped<BookRepository>();
+builder.Services.AddScoped<IRepository<BookEntity, int>>(sp => sp.GetRequiredService<BookRepository>());
+builder.Services.AddScoped<IReadOnlyRepository<BookEntity, int>>(sp => sp.GetRequiredService<BookRepository>());
+builder.Services.AddScoped<IBookReadOnlyRepository>(sp => sp.GetRequiredService<BookRepository>());
 
 builder.Services.AddMediatR(cfg =>
 {

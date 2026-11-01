@@ -43,6 +43,25 @@ applies EF Core migrations (creating `bookstore.db` if missing) and seeds sample
   dotnet tool restore
   dotnet ef migrations add <Name> --project api\src\BookStore.Infrastructure --startup-project api\src\BookStore.API --output-dir Persistence\Migrations
   ```
+### Hand-written query
+
+Books per genre, written as raw SQL against SQLite (the genre filter is populated from it):
+
+- **Query:** `BookRepository.GetGenreCountsAsync` in
+  [`api/src/BookStore.Infrastructure/Persistence/BookRepository.cs`](api/src/BookStore.Infrastructure/Persistence/BookRepository.cs)
+  (`SELECT Genre, COUNT(*) ... GROUP BY Genre`).
+- **Slice:** `GetGenreCountsQuery` in `api/src/BookStore.Application/Features/Books/GetGenreCounts`.
+- **Endpoint:** `GET /api/books/genres`.
+
+### Endpoints
+
+| Method and route | Purpose |
+|---|---|
+| `GET /api/books` | List books. Query: `page`, `pageSize` (1-100), `sortBy` (`Title`, `Author`, `Genre`, `Price`, `PublishedYear`, `Stock`), `descending`, `genre` |
+| `GET /api/books/genres` | Number of books per genre |
+
+Request examples are in `api/src/BookStore.API/BookStore.API.http`.
+
 ## Web
 
 Not started yet.

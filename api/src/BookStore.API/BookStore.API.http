@@ -8,12 +8,22 @@ Accept: application/json
 GET {{BookStore.API_HostAddress}}/api/books?page=2&pageSize=5
 Accept: application/json
 
+### Invalid paging returns 400 Bad Request
+GET {{BookStore.API_HostAddress}}/api/books?page=0&pageSize=500
+Accept: application/json
+
 ### Sort by price, highest first (sortBy: Title, Author, Genre, Price, PublishedYear, Stock)
 GET {{BookStore.API_HostAddress}}/api/books?sortBy=Price&descending=true
 Accept: application/json
 
-### Invalid paging returns 400 Bad Request
-GET {{BookStore.API_HostAddress}}/api/books?page=0&pageSize=500
+### Filter by genre
+GET {{BookStore.API_HostAddress}}/api/books?genre=Fantasy&sortBy=Price
 Accept: application/json
+
+### Books per genre
+GET {{BookStore.API_HostAddress}}/api/books/genres
+Accept: application/json
+
+
 
 ###
