@@ -62,7 +62,21 @@ Books per genre, written as raw SQL against SQLite (the genre filter is populate
 
 Request examples are in `api/src/BookStore.API/BookStore.API.http`.
 
+### Tests
+
+Run the application and SQLite repository tests from the repository root:
+
+```powershell
+dotnet test api\tests\BookStore.UnitTests\BookStore.UnitTests.csproj
+```
+
+Tests are organized by layer in folders within a single `BookStore.UnitTests` project. This keeps
+the setup simple for the current project size instead of creating a separate test project per layer.
+
+Repository tests use an isolated in-memory SQLite database; they do not modify `bookstore.db`.
+`BookRepositoryTests` implements `IDisposable` so xUnit disposes the EF Core context and SQLite
+connection after each test.
+
 ## Web
 
 Not started yet.
-

@@ -1,12 +1,14 @@
 <Solution>
-  <Folder Name="/api/">
+  <Folder Name="/api/" />
+  <Folder Name="/api/src/">
     <Project Path="api/src/BookStore.API/BookStore.API.csproj" />
     <Project Path="api/src/BookStore.Application/BookStore.Application.csproj" />
     <Project Path="api/src/BookStore.Domain/BookStore.Domain.csproj" />
     <Project Path="api/src/BookStore.Infrastructure/BookStore.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/docs/">
-    <File Path="../../../Downloads/Full Stack Developer - Technical Assessment.md" />
+  <Folder Name="/api/tests/">
+    <Project Path="api/tests/BookStore.UnitTests/BookStore.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/docs/" />
   <Folder Name="/web/" />
 </Solution>
