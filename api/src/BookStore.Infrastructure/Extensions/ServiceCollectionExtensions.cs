@@ -1,4 +1,6 @@
+using BookStore.Application.Abstractions;
 using BookStore.Application.Features.Catalog;
+using BookStore.Infrastructure.ExternalServices;
 using BookStore.Infrastructure.ExternalServices.OpenLibrary;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +19,7 @@ public static class ServiceCollectionExtensions
             client.BaseAddress = new Uri(options.BaseUrl);
             client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
             client.DefaultRequestHeaders.UserAgent.ParseAdd(options.UserAgent);
-        });
+        }).AddHttpMessageHandler(sp => new CorrelationIdDelegatingHandler(sp.GetRequiredService<ICorrelationIdProvider>()));
 
         return services;
     }

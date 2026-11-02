@@ -1,5 +1,8 @@
 using System.Text.Json.Serialization;
 using BookStore.Application;
+using BookStore.Application.Abstractions;
+using BookStore.API.Logging;
+using Serilog;
 using BookStore.Application.Behaviors;
 using BookStore.Domain.Entities;
 using BookStore.Domain.Interfaces;
@@ -9,6 +12,14 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext());
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<ICorrelationIdProvider, HttpContextCorrelationIdProvider>();
 
 // Add services to the container.
 
@@ -47,6 +58,9 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseSerilogRequestLogging();
 
 app.UseAuthorization();
 
