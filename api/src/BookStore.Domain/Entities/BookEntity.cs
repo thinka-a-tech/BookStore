@@ -35,4 +35,15 @@ public class BookEntity
         CoverUrl = coverUrl;
         Description = description;
     }
+
+    public void UpdateBook(Genre genre, decimal price, int stock, string? description)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(price);
+        ArgumentOutOfRangeException.ThrowIfNegative(stock);
+
+        Genre = genre;
+        Price = price;
+        Stock = stock;
+        Description = description;
+    }
 }
