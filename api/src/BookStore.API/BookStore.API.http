@@ -24,6 +24,14 @@ Accept: application/json
 GET {{BookStore.API_HostAddress}}/api/books/genres
 Accept: application/json
 
+### Search Open Library (results are not persisted; 503/504 if Open Library is down or slow)
+GET {{BookStore.API_HostAddress}}/api/catalog/search?q=harry potter&limit=5
+Accept: application/json
+
+### Search with a too-short term returns 400 Bad Request
+GET {{BookStore.API_HostAddress}}/api/catalog/search?q=a
+Accept: application/json
+
 ### Create a book (201 with the new id; 400 on validation error or duplicate ISBN)
 POST {{BookStore.API_HostAddress}}/api/books
 Content-Type: application/json

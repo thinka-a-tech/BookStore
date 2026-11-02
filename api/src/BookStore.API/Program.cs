@@ -3,6 +3,7 @@ using BookStore.Application;
 using BookStore.Application.Behaviors;
 using BookStore.Domain.Entities;
 using BookStore.Domain.Interfaces;
+using BookStore.Infrastructure.Extensions;
 using BookStore.Infrastructure.Persistence;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ builder.Services.AddScoped<BookRepository>();
 builder.Services.AddScoped<IRepository<BookEntity, int>>(sp => sp.GetRequiredService<BookRepository>());
 builder.Services.AddScoped<IReadOnlyRepository<BookEntity, int>>(sp => sp.GetRequiredService<BookRepository>());
 builder.Services.AddScoped<IBookReadOnlyRepository>(sp => sp.GetRequiredService<BookRepository>());
+builder.Services.AddOpenLibraryCatalog(builder.Configuration);
 
 builder.Services.AddMediatR(cfg =>
 {

@@ -10,6 +10,12 @@ public static class ResultExtensions
     {
         var detail = string.Join("; ", result.Errors.Select(e => e.Message));
 
+        if (result.Errors.OfType<ExternalServiceError>().FirstOrDefault() is { } externalError)
+        {
+            var status = externalError.IsTimeout ? StatusCodes.Status504GatewayTimeout : StatusCodes.Status503ServiceUnavailable;
+            return controller.Problem(detail: detail, statusCode: status);
+        }
+
         if (result.HasError<NotFoundError>())
         {
             return controller.Problem(detail: detail, statusCode: StatusCodes.Status404NotFound);

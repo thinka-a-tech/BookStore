@@ -43,6 +43,31 @@ applies EF Core migrations (creating `bookstore.db` if missing) and seeds sample
   dotnet tool restore
   dotnet ef migrations add <Name> --project api\src\BookStore.Infrastructure --startup-project api\src\BookStore.API --output-dir Persistence\Migrations
   ```
+
+### Configuration
+
+Open Library is the external book catalog (search only). Its settings live in the `OpenLibrary` section of
+`api/src/BookStore.API/appsettings.json` and bind to `OpenLibraryOptions`. No API key is needed.
+
+```json
+"OpenLibrary": {
+  "BaseUrl": "https://openlibrary.org/",
+  "CoversBaseUrl": "https://covers.openlibrary.org/",
+  "UserAgent": "BookStoreApp/1.0 (contact: dev@example.com)",
+  "TimeoutSeconds": 10
+}
+```
+
+| Setting | Default | Purpose |
+|---|---|---|
+| `BaseUrl` | `https://openlibrary.org/` | Base address for the search API |
+| `CoversBaseUrl` | `https://covers.openlibrary.org/` | Base address used to build `CoverUrl` values |
+| `UserAgent` | `BookStoreApp/1.0 (contact: dev@myproject.com)` | Sent with every request |
+| `TimeoutSeconds` | `10` | Request timeout; a timeout surfaces as an external service error |
+
+Any of these can be overridden through environment variables (for example `OpenLibrary__TimeoutSeconds=5`)
+or `appsettings.Development.json`.
+
 ### Hand-written query
 
 Books per genre, written as raw SQL against SQLite (the genre filter is populated from it):
@@ -79,6 +104,7 @@ and `ResultExtensions.ToFailureResult` in the API maps failures to HTTP response
 | `GET /api/books/genres` | Number of books per genre |
 | `PUT /api/books/{id}` | Update a book's store-owned fields (`genre`, `price`, `stock`, `description`); returns the updated book, or 404 if not found |
 | `DELETE /api/books/{id}` | Delete a book; returns 204, or 404 if not found |
+| `GET /api/catalog/search` | Search Open Library. Query: `q` (2-200 chars), `limit` (1-20, default 10). Returns normalized candidates (title, author, ISBN, year, cover URL, Open Library key); nothing is persisted. 503/504 if Open Library is unavailable or times out |
 
 Request examples are in `api/src/BookStore.API/BookStore.API.http`.
 
