@@ -2,6 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using BookStore.API.Extensions;
 using BookStore.API.Payload.Requests;
 using BookStore.Application.Features.Books;
+using BookStore.Application.Features.Books.CreateBook;
+using BookStore.Application.Features.Books.DeleteBook;
 using BookStore.Application.Features.Books.GetBooks;
 using BookStore.Application.Features.Books.GetGenreCounts;
 using BookStore.Application.Features.Books.UpdateBook;
@@ -51,6 +53,21 @@ public sealed class BooksController(IMediator mediator) : ControllerBase
         return result.IsSuccess ? Ok(result.Value) : result.ToFailureResult(this);
     }
 
+    /// <summary>Creates a book and returns its id.</summary>
+    /// <param name="request">Book details</param>
+    [HttpPost]
+    [ProducesResponseType<int>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<int>> CreateBook([FromBody] CreateBookRequest request, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new CreateBookCommand(
+            request.Title, request.Author, request.Isbn, request.OpenLibraryKey, request.Genre,
+            request.Price, request.Stock, request.PublishedYear, request.CoverUrl, request.Description), cancellationToken);
+
+        return result.IsSuccess ? Created($"/api/books/{result.Value}", result.Value) : result.ToFailureResult(this);
+    }
+
     /// <summary>Updates the store-owned fields of a book (genre, price, stock, description) and returns the updated book.</summary>
     /// <param name="id">Book id</param>
     /// <param name="request">New store-owned values</param>
@@ -64,5 +81,19 @@ public sealed class BooksController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(new UpdateBookCommand(id, request.Genre, request.Price, request.Stock, request.Description), cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : result.ToFailureResult(this);
+    }
+
+    /// <summary>Deletes a book from the store.</summary>
+    /// <param name="id">Book id</param>
+    [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteBook(int id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new DeleteBookCommand(id), cancellationToken);
+
+        return result.IsSuccess ? NoContent() : result.ToFailureResult(this);
     }
 }

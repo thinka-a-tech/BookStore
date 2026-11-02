@@ -24,6 +24,35 @@ Accept: application/json
 GET {{BookStore.API_HostAddress}}/api/books/genres
 Accept: application/json
 
+### Create a book (201 with the new id; 400 on validation error or duplicate ISBN)
+POST {{BookStore.API_HostAddress}}/api/books
+Content-Type: application/json
+
+{
+  "title": "The Hobbit",
+  "author": "J.R.R. Tolkien",
+  "isbn": "9780547928227",
+  "openLibraryKey": "/works/OL262758W",
+  "genre": "Fantasy",
+  "price": 12.99,
+  "stock": 5,
+  "publishedYear": 1937
+}
+
+### Update store-owned fields (200 with the updated book, 404 if not found)
+PUT {{BookStore.API_HostAddress}}/api/books/1
+Content-Type: application/json
+
+{
+  "genre": "Fantasy",
+  "price": 14.99,
+  "stock": 10,
+  "description": "Updated description"
+}
+
+### Delete a book (204 on success, 404 if not found)
+DELETE {{BookStore.API_HostAddress}}/api/books/1
+
 
 
 ###

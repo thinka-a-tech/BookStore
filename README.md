@@ -53,12 +53,32 @@ Books per genre, written as raw SQL against SQLite (the genre filter is populate
 - **Slice:** `GetGenreCountsQuery` in `api/src/BookStore.Application/Features/Books/GetGenreCounts`.
 - **Endpoint:** `GET /api/books/genres`.
 
+### Trade-offs and decisions
+
+**Error handling with FluentResults.** Handlers return `Result` / `Result<T>` instead of throwing for
+expected failures (not found, duplicate ISBN, validation errors). A MediatR pipeline behavior
+(`MediatrValidationPipelineBehavior`) runs the FluentValidation validators and returns a failed result,
+and `ResultExtensions.ToFailureResult` in the API maps failures to HTTP responses (404, 400
+`ValidationProblem`, 500). Controllers keep the success response themselves.
+
+- **Pros:** failure paths are explicit in handler signatures, no exceptions for control flow, and one
+  place maps failures to HTTP.
+- **Cons:** errors are loosely typed (`NotFoundError` plus a `Property` metadata key for validation),
+  so the mapping relies on conventions. The behavior requires every handler to return a FluentResults
+  type, and it adds a dependency.
+- **Alternative considered:** throw exceptions (`NotFoundException`, FluentValidation's
+  `ValidationException`) and map them to `ProblemDetails` in a global `IExceptionHandler`. This is less
+  code and lets handlers return plain DTOs, but failure paths become implicit and exceptions are used
+  for expected outcomes.
+
 ### Endpoints
 
 | Method and route | Purpose |
 |---|---|
 | `GET /api/books` | List books. Query: `page`, `pageSize` (1-100), `sortBy` (`Title`, `Author`, `Genre`, `Price`, `PublishedYear`, `Stock`), `descending`, `genre` |
 | `GET /api/books/genres` | Number of books per genre |
+| `PUT /api/books/{id}` | Update a book's store-owned fields (`genre`, `price`, `stock`, `description`); returns the updated book, or 404 if not found |
+| `DELETE /api/books/{id}` | Delete a book; returns 204, or 404 if not found |
 
 Request examples are in `api/src/BookStore.API/BookStore.API.http`.
 
