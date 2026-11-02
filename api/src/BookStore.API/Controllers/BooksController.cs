@@ -4,6 +4,7 @@ using BookStore.API.Payload.Requests;
 using BookStore.Application.Features.Books;
 using BookStore.Application.Features.Books.CreateBook;
 using BookStore.Application.Features.Books.DeleteBook;
+using BookStore.Application.Features.Books.GetBook;
 using BookStore.Application.Features.Books.GetBooks;
 using BookStore.Application.Features.Books.GetGenreCounts;
 using BookStore.Application.Features.Books.UpdateBook;
@@ -53,11 +54,26 @@ public sealed class BooksController(IMediator mediator) : ControllerBase
         return result.IsSuccess ? Ok(result.Value) : result.ToFailureResult(this);
     }
 
+    /// <summary>Gets one book by id.</summary>
+    /// <param name="id">Book id</param>
+    [HttpGet("{id:int}")]
+    [ProducesResponseType<BookDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<BookDto>> GetBook(int id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetBookQuery(id), cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : result.ToFailureResult(this);
+    }
+
     /// <summary>Creates a book and returns its id.</summary>
     /// <param name="request">Book details</param>
     [HttpPost]
     [ProducesResponseType<int>(StatusCodes.Status201Created)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<int>> CreateBook([FromBody] CreateBookRequest request, CancellationToken cancellationToken)
     {

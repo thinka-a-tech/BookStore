@@ -1,3 +1,4 @@
+using BookStore.Application.Errors;
 using BookStore.Domain.Entities;
 using BookStore.Domain.Interfaces;
 using FluentResults;
@@ -12,7 +13,12 @@ public sealed class CreateBookCommandHandler(IRepository<BookEntity, int> reposi
     {
         if (await bookReadOnlyRepository.IsbnExistsAsync(command.Isbn, cancellationToken))
         {
-            return Result.Fail<int>(new Error($"A book with ISBN '{command.Isbn}' already exists.").WithMetadata("Property", nameof(CreateBookCommand.Isbn)));
+            return Result.Fail<int>(new ConflictError($"A book with ISBN '{command.Isbn}' already exists."));
+        }
+
+        if (await bookReadOnlyRepository.OpenLibraryKeyExistsAsync(command.OpenLibraryKey, cancellationToken))
+        {
+            return Result.Fail<int>(new ConflictError($"A book with Open Library key '{command.OpenLibraryKey}' already exists."));
         }
             
         var book = new BookEntity(command.Title, command.Author, command.Isbn, command.OpenLibraryKey,

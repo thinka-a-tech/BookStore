@@ -102,6 +102,8 @@ and `ResultExtensions.ToFailureResult` in the API maps failures to HTTP response
 |---|---|
 | `GET /api/books` | List books. Query: `page`, `pageSize` (1-100), `sortBy` (`Title`, `Author`, `Genre`, `Price`, `PublishedYear`, `Stock`), `descending`, `genre` |
 | `GET /api/books/genres` | Number of books per genre |
+| `GET /api/books/{id}` | Get one book; 404 if not found |
+| `POST /api/books` | Create a book (Open Library fields + `genre`, `price`, `stock`); returns 201 with the new id, 400 on validation errors, 409 if the ISBN or Open Library key already exists |
 | `PUT /api/books/{id}` | Update a book's store-owned fields (`genre`, `price`, `stock`, `description`); returns the updated book, or 404 if not found |
 | `DELETE /api/books/{id}` | Delete a book; returns 204, or 404 if not found |
 | `GET /api/catalog/search` | Search Open Library. Query: `q` (2-200 chars), `limit` (1-20, default 10). Returns normalized candidates (title, author, ISBN, year, cover URL, Open Library key); nothing is persisted. 503/504 if Open Library is unavailable or times out |

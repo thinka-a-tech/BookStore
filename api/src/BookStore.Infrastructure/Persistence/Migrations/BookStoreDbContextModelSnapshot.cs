@@ -69,6 +69,9 @@ namespace BookStore.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("Genre");
 
+                    b.HasIndex("Isbn")
+                        .IsUnique();
+
                     b.HasIndex("OpenLibraryKey")
                         .IsUnique();
 

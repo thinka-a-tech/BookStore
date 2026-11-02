@@ -7,4 +7,5 @@ public interface IBookReadOnlyRepository : IReadOnlyRepository<BookEntity, int>
 {
     Task<IReadOnlyList<GenreCount>> GetGenreCountsAsync(CancellationToken cancellationToken = default);
     Task<bool> IsbnExistsAsync(string isbn, CancellationToken cancellationToken = default);
+    Task<bool> OpenLibraryKeyExistsAsync(string openLibraryKey, CancellationToken cancellationToken = default);
 }

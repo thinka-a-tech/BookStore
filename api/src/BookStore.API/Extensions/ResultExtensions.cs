@@ -21,6 +21,11 @@ public static class ResultExtensions
             return controller.Problem(detail: detail, statusCode: StatusCodes.Status404NotFound);
         }
 
+        if (result.HasError<ConflictError>())
+        {
+            return controller.Problem(detail: detail, statusCode: StatusCodes.Status409Conflict);
+        }
+
         var validationErrors = result.Errors
             .Where(e => e.Metadata.ContainsKey("Property"))
             .GroupBy(e => e.Metadata["Property"]?.ToString() ?? string.Empty)
