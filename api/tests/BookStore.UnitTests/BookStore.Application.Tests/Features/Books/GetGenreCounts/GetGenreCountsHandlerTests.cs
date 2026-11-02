@@ -53,6 +53,8 @@ public class GetGenreCountsHandlerTests
         public Task<BookEntity?> GetByIdAsync(int id) => throw new NotSupportedException();
         public Task<bool> IsbnExistsAsync(string isbn, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
+        public Task<bool> OpenLibraryKeyExistsAsync(string openLibraryKey, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
         public Task<IEnumerable<BookEntity>> GetAllAsync(CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
         public Task<PagedResult<BookEntity>> GetAllPagedAsync(

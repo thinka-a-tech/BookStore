@@ -18,7 +18,7 @@ public static class BookStoreSeeder
             Book("Harry Potter and the Chamber of Secrets", "J.K. Rowling", "9780439064866", "/works/OL82537W", Genre.Fantasy, 13.50m, 8, 1999),
             Book("Harry Potter and the Prisoner of Azkaban", "J.K. Rowling", "9780439136358", "/works/OL82536W", Genre.Fantasy, 12.50m, 3, 1999),
             Book("Harry Potter and the Goblet of Fire", "J.K. Rowling", "9780439139595", "/works/OL82560W", Genre.Fantasy, 11.50m, 10, 2000),
-            Book("Harry Potter and the Order of the Phoenix", "J.K. Rowling", "9780439139595", "/works/OL82548W", Genre.Fantasy, 9.80m, 15, 2003),
+            Book("Harry Potter and the Order of the Phoenix", "J.K. Rowling", "9780439358064", "/works/OL82548W", Genre.Fantasy, 9.80m, 15, 2003),
             Book("Harry Potter and the Half-Blood Prince", "J.K. Rowling", "9780439784542", "/works/OL82565W", Genre.Fantasy, 10.50m, 18, 2005),
             Book("Harry Potter and the Deathly Hallows", "J.K. Rowling", "9780545010221", "/works/OL82586W", Genre.Fantasy, 11.20m, 3, 2007),
             Book("Prey", "Michael Crichton", "9780066214122", "/works/OL46883W", Genre.Fiction, 7.99m, 20, 2002),
