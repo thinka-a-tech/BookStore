@@ -127,4 +127,50 @@ connection after each test.
 
 ## Web
 
-Not started yet.
+Angular 21 client in `web/BookStore.UI` (standalone components, signals, PrimeNG 21 and Tailwind CSS 4).
+
+### Prerequisites
+
+- Node.js 20.19 or newer and npm.
+
+### Run
+
+Start the API first (it listens on `http://localhost:5104`), then:
+
+```powershell
+cd web\BookStore.UI
+npm install
+npm start
+```
+
+The dev server runs on `http://localhost:4200` and proxies `/api` to the API through `proxy.conf.json`,
+so the browser only talks to one origin and the API needs no CORS configuration. If the API runs on a
+different port, change the `target` in `proxy.conf.json`.
+
+Run the unit tests with `npm test`
+
+### Styling
+
+PrimeNG provides the components (Aura theme, configured in `src/app/app.config.ts`) and Tailwind provides
+layout and spacing. They share one CSS layer order, `theme, base, primeng`, declared in `src/styles.css` and in
+the PrimeNG theme options
+
+### Architecture
+
+Clean Architecture with dependencies pointing inward: Presentation -> Application -> Core (Domain), and
+Infrastructure -> Core. Nothing in `core` may import from Angular, and only `infrastructure` may use `HttpClient`.
+
+| Folder (`src/app`) | Responsibility |
+|---|---|
+| `core` | Framework-agnostic domain: models (`Book`, `Genre`, `CatalogBook`, `PagedResult`, `GenreCount`, request shapes), `AppError`, and the repository ports (`BookRepository`, `CatalogRepository`) |
+| `application` | Use-case services and app state (signals), plus the `BOOK_REPOSITORY` / `CATALOG_REPOSITORY` injection tokens. Depends only on `core` |
+| `infrastructure` | HTTP implementations of the ports, DTO mapping and API error normalization. The only layer that knows endpoint URLs |
+| `presentation` | Header, Body, Footer and the dialogs. Talks to use cases, never to `HttpClient` |
+
+Design notes:
+
+- **Ports are plain TypeScript interfaces** in `core`.
+- **Errors are values the UI understands.** Repositories emit an `AppError` (`validation`, `notFound`, `conflict`,
+  `unavailable`, `timeout`, `unknown`) so components never inspect HTTP status codes.
+- **Update only edits store-owned fields** (genre, price, stock, description), matching `PUT /api/books/{id}`.
+
