@@ -1,0 +1,10 @@
+<footer class="flex flex-wrap items-center justify-between gap-2 border-t border-surface-200 bg-surface-0 px-6 py-3 text-sm text-muted-color">
+  <span>{{ store.totalBooks() }} books in the store</span>
+  <span>
+    @if (filter.genre(); as genre) {
+      {{ store.result()?.totalCount ?? 0 }} in {{ genre }}
+    } @else {
+      Showing all genres
+    }
+  </span>
+</footer>

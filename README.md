@@ -96,6 +96,18 @@ and `ResultExtensions.ToFailureResult` in the API maps failures to HTTP response
   code and lets handlers return plain DTOs, but failure paths become implicit and exceptions are used
   for expected outcomes.
 
+**MediatR licensing.** Recent MediatR versions use a commercial license for larger organizations. I kept MediatR
+because it is the most familiar option and the code only uses `IRequest`, handlers and pipeline behaviors, so
+switching to a hand-rolled mediator or Wolverine would be a contained change. It logs a license warning at startup
+in development. Revisit this before any commercial use.
+
+### Logging and correlation IDs
+
+Serilog (`Serilog.AspNetCore`) writes structured logs to the console; levels and the output template are in the
+`Serilog` section of `appsettings.json`. `CorrelationIdMiddleware` reads the `X-Correlation-ID` request header
+(or generates one), echoes it on the response, and pushes it into the log context, so every log line for a request
+carries `CorrelationId`. `CorrelationIdDelegatingHandler` forwards the same ID on the outbound Open Library call,
+so one request can be traced end to end.
 ### Endpoints
 
 | Method and route | Purpose |
@@ -174,3 +186,41 @@ Design notes:
   `unavailable`, `timeout`, `unknown`) so components never inspect HTTP status codes.
 - **Update only edits store-owned fields** (genre, price, stock, description), matching `PUT /api/books/{id}`.
 
+- **Dialog state is local, data state is shared.** Add and edit dialogs keep their form state in component signals;
+  anything that must stay consistent across the page (grid page, sort, genre filter, genre counts) lives in
+  root-provided stores in `application`.
+
+### Web trade-offs and decisions
+
+**Sharing the genre filter between the sibling Header and Body.** The Header and Body are siblings, so
+`@Input`/`@Output` cannot connect them. The filter lives in `GenreFilterStore`, a root-provided service holding one
+signal. The Header calls `select(genre)`; `BooksStore` (used by the Body, Footer and the Header's counts) reads it,
+resets to page 1 and refetches.
+
+- **Why a signal store:** it is a few lines, needs no extra dependency, is synchronous and easy to test, and
+  signals plug directly into templates and `computed`/`linkedSignal` without subscriptions or `async` pipes.
+  Components stay decoupled: neither knows the other exists, they only share the store.
+- **Alternatives considered:** a `BehaviorSubject` service (same idea with more boilerplate and manual
+  unsubscribing), NgRx or another state library (too heavy for one shared value), and router query parameters
+  (shareable, bookmarkable URLs, but couples the filter to routing and adds an async hop). Query parameters would be the natural next step
+  if deep links to a filtered list were needed.
+
+**Server-side paging and sorting.** `p-table` runs in lazy mode and sends `page`, `pageSize`, `sortBy`, `descending` and
+`genre` to the API, so the browser never holds the whole catalog. The cost is a request per interaction;
+`switchMap` cancels in-flight requests so a slow response cannot overwrite a newer one.
+
+**Dev proxy instead of CORS.** `proxy.conf.json` forwards `/api` to the API, so there is no CORS configuration and
+the client uses relative URLs. A production deployment would need the same routing at a reverse proxy, or CORS enabled on the API.
+
+**Errors as values.** The infrastructure layer converts HTTP failures (ProblemDetails) into `AppError`, mirroring
+the API's mapping (400, 404, 409, 503, 504). The UI shows loading, empty and error states, with Retry for list
+failures, inline messages for search and save failures, and toasts for delete.
+
+**Open Library results without an ISBN** are dropped by the API, so a book can always be saved with an ISBN.
+
+### Web tests
+
+`npm test` runs Vitest unit tests: the HTTP repositories (`HttpTestingController`), the error mapper, `BooksStore`
+(paging, genre reset, error state, reload after delete) and the app shell (Header, Body and Footer are siblings).
+They use fake repositories provided through the injection tokens, which shows the ports make the data source swappable.
+Dialog components are not covered yet.

@@ -1,0 +1,18 @@
+<header class="flex flex-col gap-3 border-b border-surface-200 bg-surface-0 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+  <div class="flex items-center gap-3">
+    <i class="pi pi-book text-2xl text-primary"></i>
+    <h1 class="text-xl font-semibold">BookStore</h1>
+  </div>
+  <p-select
+    inputId="genre-filter"
+    ariaLabel="Filter by genre"
+    class="w-full sm:w-64"
+    [options]="options()"
+    optionLabel="label"
+    optionValue="value"
+    placeholder="All genres"
+    [ngModel]="filter.genre()"
+    (ngModelChange)="filter.select($event ?? null)"
+  />
+</header>
+

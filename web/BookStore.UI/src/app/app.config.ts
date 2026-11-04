@@ -2,6 +2,7 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import Aura from '@primeuix/themes/aura';
 
 import { routes } from './app.routes';
@@ -14,6 +15,8 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(),
+    MessageService,
+    ConfirmationService,
     { provide: BOOK_REPOSITORY, useClass: HttpBookRepository },
     { provide: CATALOG_REPOSITORY, useClass: HttpCatalogRepository },
     providePrimeNG({
@@ -30,4 +33,5 @@ export const appConfig: ApplicationConfig = {
     })
   ]
 };
+
 

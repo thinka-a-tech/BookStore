@@ -1,0 +1,78 @@
+<p-dialog header="Add book" [visible]="true" [modal]="true" [style]="{ width: '40rem' }" [breakpoints]="{ '640px': '95vw' }" (onHide)="closed.emit()">
+  @if (!selected()) {
+    <form class="flex gap-2" (ngSubmit)="search()">
+      <input pInputText name="term" class="flex-1" placeholder="Search by title, author or ISBN" aria-label="Search term"
+             [ngModel]="term()" (ngModelChange)="term.set($event)" />
+      <p-button type="submit" label="Search" icon="pi pi-search" [loading]="searching()" [disabled]="!term().trim()" />
+    </form>
+
+    <div class="mt-4 max-h-96 overflow-y-auto">
+      @if (searchError(); as error) {
+        <p-message severity="error">Search failed: {{ error.message }}</p-message>
+      } @else if (results(); as list) {
+        @if (list.length === 0) {
+          <p class="py-6 text-center text-muted-color">No results. Try a different search.</p>
+        }
+        @for (book of list; track book.openLibraryKey) {
+          <button type="button" class="flex w-full items-center gap-3 rounded p-2 text-left hover:bg-surface-100" (click)="select(book)">
+            @if (book.coverUrl) {
+              <img [src]="book.coverUrl" [alt]="book.title" class="h-16 w-11 rounded object-cover" loading="lazy" />
+            } @else {
+              <div class="flex h-16 w-11 items-center justify-center rounded bg-surface-100"><i class="pi pi-book"></i></div>
+            }
+            <span class="flex flex-col">
+              <span class="font-medium">{{ book.title }}</span>
+              <span class="text-sm text-muted-color">{{ book.author }} &middot; {{ book.publishedYear ?? 'n/a' }}</span>
+            </span>
+          </button>
+        }
+      }
+    </div>
+  } @else {
+    <div class="mb-4 flex items-center gap-3 rounded bg-surface-50 p-3">
+      @if (selected()!.coverUrl) {
+        <img [src]="selected()!.coverUrl" [alt]="selected()!.title" class="h-16 w-11 rounded object-cover" />
+      }
+      <div class="flex flex-col">
+        <span class="font-medium">{{ selected()!.title }}</span>
+        <span class="text-sm text-muted-color">{{ selected()!.author }} &middot; ISBN {{ selected()!.isbn }}</span>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1">
+        <label for="add-genre">Genre</label>
+        <p-select inputId="add-genre" [options]="genres" [ngModel]="genre()" (ngModelChange)="genre.set($event)" placeholder="Select a genre" appendTo="body" />
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1">
+          <label for="add-price">Price</label>
+          <p-inputnumber inputId="add-price" mode="currency" currency="USD" [min]="0" [ngModel]="price()" (ngModelChange)="price.set($event)" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="add-stock">Stock (optional)</label>
+          <p-inputnumber inputId="add-stock" [min]="0" [useGrouping]="false" [ngModel]="stock()" (ngModelChange)="stock.set($event ?? 0)" />
+        </div>
+      </div>
+      <div class="flex flex-col gap-1">
+        <label for="add-description">Description (optional)</label>
+        <textarea pTextarea id="add-description" rows="3" [ngModel]="description()" (ngModelChange)="description.set($event)"></textarea>
+      </div>
+      @if (saveError(); as error) {
+        <p-message severity="error">
+          {{ error.message }}
+          @for (field of fieldMessages(error); track field) { <div>{{ field }}</div> }
+        </p-message>
+      }
+    </div>
+  }
+
+  <ng-template #footer>
+    @if (selected()) {
+      <p-button label="Back" severity="secondary" [text]="true" (onClick)="selected.set(null)" />
+      <p-button label="Save" icon="pi pi-check" [loading]="saving()" [disabled]="!canSave()" (onClick)="save()" />
+    } @else {
+      <p-button label="Cancel" severity="secondary" [text]="true" (onClick)="closed.emit()" />
+    }
+  </ng-template>
+</p-dialog>

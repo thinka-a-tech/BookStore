@@ -1,0 +1,36 @@
+<p-dialog header="Edit book" [visible]="true" [modal]="true" [style]="{ width: '34rem' }" [breakpoints]="{ '640px': '95vw' }" (onHide)="closed.emit()">
+  <div class="mb-4 flex flex-col">
+    <span class="font-medium">{{ book().title }}</span>
+    <span class="text-sm text-muted-color">{{ book().author }} &middot; ISBN {{ book().isbn }}</span>
+  </div>
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-1">
+      <label for="edit-genre">Genre</label>
+      <p-select inputId="edit-genre" [options]="genres" [ngModel]="genre()" (ngModelChange)="genre.set($event)" appendTo="body" />
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label for="edit-price">Price</label>
+        <p-inputnumber inputId="edit-price" mode="currency" currency="USD" [min]="0" [ngModel]="price()" (ngModelChange)="price.set($event)" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label for="edit-stock">Stock</label>
+        <p-inputnumber inputId="edit-stock" [min]="0" [useGrouping]="false" [ngModel]="stock()" (ngModelChange)="stock.set($event ?? 0)" />
+      </div>
+    </div>
+    <div class="flex flex-col gap-1">
+      <label for="edit-description">Description</label>
+      <textarea pTextarea id="edit-description" rows="3" [ngModel]="description()" (ngModelChange)="description.set($event)"></textarea>
+    </div>
+    @if (error(); as e) {
+      <p-message severity="error">
+        {{ e.message }}
+        @for (field of fieldMessages(e); track field) { <div>{{ field }}</div> }
+      </p-message>
+    }
+  </div>
+  <ng-template #footer>
+    <p-button label="Cancel" severity="secondary" [text]="true" (onClick)="closed.emit()" />
+    <p-button label="Save" icon="pi pi-check" [loading]="saving()" [disabled]="!canSave()" (onClick)="save()" />
+  </ng-template>
+</p-dialog>

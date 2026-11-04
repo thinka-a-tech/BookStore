@@ -1,22 +1,13 @@
-import { Component, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { RouterOutlet } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
+import { Component } from '@angular/core';
+import { ConfirmDialog } from 'primeng/confirmdialog';
+import { Toast } from 'primeng/toast';
+import { Body } from './presentation/body/body';
+import { Footer } from './presentation/footer/footer';
+import { Header } from './presentation/header/header';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ButtonModule],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  imports: [Header, Body, Footer, Toast, ConfirmDialog],
+  templateUrl: './app.html'
 })
-export class App {
-  private readonly http = inject(HttpClient);
-  protected readonly status = signal('Click the button to call /api/books/genres through the proxy.');
-
-  protected check(): void {
-    this.http.get<unknown[]>('/api/books/genres').subscribe({
-      next: genres => this.status.set('API reachable: ' + genres.length + ' genres'),
-      error: err => this.status.set('API call failed: ' + err.status)
-    });
-  }
-}
+export class App {}

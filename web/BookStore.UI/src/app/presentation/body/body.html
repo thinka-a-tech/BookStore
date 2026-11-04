@@ -1,0 +1,84 @@
+<main class="flex-1 p-4 sm:p-6">
+  <div class="mb-4 flex items-center justify-between">
+    <h2 class="text-lg font-medium">Books</h2>
+    <p-button label="Add book" icon="pi pi-plus" (onClick)="adding.set(true)" />
+  </div>
+
+  @if (store.error(); as error) {
+    <p-message severity="error" class="mb-4 block">
+      <div class="flex items-center gap-3">
+        <span>{{ error.message }}</span>
+        <p-button label="Retry" size="small" severity="secondary" (onClick)="store.reload()" />
+      </div>
+    </p-message>
+  }
+
+  <p-table
+    [value]="books()"
+    [lazy]="true"
+    [lazyLoadOnInit]="false"
+    [paginator]="true"
+    [rows]="store.query().pageSize"
+    [first]="first()"
+    [totalRecords]="store.result()?.totalCount ?? 0"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [loading]="store.loading()"
+    [sortField]="sortField()"
+    [sortOrder]="store.query().descending ? -1 : 1"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="{first}-{last} of {totalRecords}"
+    [scrollable]="true"
+    (onLazyLoad)="onLazyLoad($event)"
+    dataKey="id"
+  >
+    <ng-template #header>
+      <tr>
+        <th class="w-20">Cover</th>
+        <th pSortableColumn="title">Title <p-sortIcon field="title" /></th>
+        <th pSortableColumn="author">Author <p-sortIcon field="author" /></th>
+        <th pSortableColumn="genre">Genre <p-sortIcon field="genre" /></th>
+        <th pSortableColumn="publishedYear">Year <p-sortIcon field="publishedYear" /></th>
+        <th pSortableColumn="price">Price <p-sortIcon field="price" /></th>
+        <th pSortableColumn="stock">Stock <p-sortIcon field="stock" /></th>
+        <th class="w-28"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-book>
+      <tr>
+        <td>
+          @if (book.coverUrl) {
+            <img [src]="book.coverUrl" [alt]="book.title" class="h-14 w-10 rounded object-cover" loading="lazy" />
+          } @else {
+            <div class="flex h-14 w-10 items-center justify-center rounded bg-surface-100"><i class="pi pi-book"></i></div>
+          }
+        </td>
+        <td class="font-medium">{{ book.title }}</td>
+        <td>{{ book.author }}</td>
+        <td>{{ book.genre }}</td>
+        <td>{{ book.publishedYear ?? '-' }}</td>
+        <td>{{ book.price | currency }}</td>
+        <td>{{ book.stock }}</td>
+        <td>
+          <div class="flex gap-1">
+            <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" ariaLabel="Edit book" (onClick)="editing.set(book)" />
+            <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" ariaLabel="Delete book" (onClick)="confirmDelete(book)" />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="8" class="py-8 text-center text-muted-color">
+          {{ store.loading() ? 'Loading books...' : 'No books found.' }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</main>
+
+@if (adding()) {
+  <app-add-book-dialog (closed)="adding.set(false)" />
+}
+@if (editing(); as book) {
+  <app-edit-book-dialog [book]="book" (closed)="editing.set(null)" />
+}
